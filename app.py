@@ -25,3 +25,28 @@ if st.button("Find Career Recommendations"):
     results = df.sort_values(by='similarity_score', ascending=False).head(5)
 
     st.dataframe(results[['job_title', 'salary_usd']])
+
+import openai
+import os
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def generate_ai_roadmap(career, skills):
+    prompt = f"""
+    Create a 3-year structured roadmap to become a {career}.
+    Include:
+    - Beginner phase
+    - Intermediate phase
+    - Advanced phase
+    - Tools to learn
+    - Certifications
+    """
+
+    response = openai.ChatCompletion.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+
+    return response.choices[0].message.content
+roadmap = generate_ai_roadmap(row['job_title'], row['required_skills'])
+st.markdown(roadmap)

@@ -1,12 +1,53 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
+def generate_ai_roadmap(career, skills):
+    return f"""
+    📍 Roadmap for {career}
+
+    🟢 Beginner:
+    - Learn fundamentals
+    - Study: {skills}
+
+    🟡 Intermediate:
+    - Build projects
+    - Work on real datasets
+
+    🔵 Advanced:
+    - Apply for internships
+    - Master system design
+    """
 df = pd.read_csv("ai_job_dataset.csv")
 df['required_skills'] = df['required_skills'].str.lower()
-df.dropna(inplace=True)
+
+st.title("🚀 CareerSense AI")
+
+student_skills = st.text_input("Enter your skills (comma separated)")
+
+if st.button("Find Career Recommendations"):
+
+    student_vector = vectorizer.transform([student_skills.lower()])
+    similarity = cosine_similarity(student_vector, skill_matrix)
+
+    df['similarity_score'] = similarity[0]
+
+    results = df.sort_values(by='similarity_score', ascending=False).head(3)
+
+    for index, row in results.iterrows():
+
+        st.subheader(row['job_title'])
+        st.write("💰 Salary:", row['salary_usd'])
+
+        roadmap = generate_ai_roadmap(
+            row['job_title'],
+            row['required_skills']
+        )
+
+        st.markdown(roadmap)
+        st.divider()
 
 vectorizer = TfidfVectorizer(max_features=50)
 skill_matrix = vectorizer.fit_transform(df['required_skills'])

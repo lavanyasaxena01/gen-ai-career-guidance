@@ -3,48 +3,44 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# -------------------------------
+# -----------------------------
 # Load Dataset
-# -------------------------------
+# -----------------------------
 df = pd.read_csv("ai_job_dataset.csv")
 df['required_skills'] = df['required_skills'].str.lower()
 
-# -------------------------------
+# -----------------------------
 # TF-IDF Setup
-# -------------------------------
+# -----------------------------
 vectorizer = TfidfVectorizer(max_features=50)
 skill_matrix = vectorizer.fit_transform(df['required_skills'])
 
-# -------------------------------
-# Roadmap Generator (Simple Version)
-# -------------------------------
-st.expander()
+# -----------------------------
+# Structured Roadmap Generator
+# -----------------------------
+def generate_structured_roadmap():
 
-def generate_structured_roadmap(career):
-
-    roadmap = {
+    return {
         "Beginner": [
             ("Python Basics", "https://www.w3schools.com/python/"),
-            ("Intro to Machine Learning", "https://www.coursera.org/learn/machine-learning"),
+            ("Intro to ML", "https://www.coursera.org/learn/machine-learning"),
             ("Git & GitHub", "https://www.freecodecamp.org/news/git-and-github-for-beginners/")
         ],
         "Intermediate": [
-            ("Build ML Projects", "https://www.kaggle.com/learn"),
+            ("Build Projects", "https://www.kaggle.com/learn"),
             ("Data Structures", "https://www.geeksforgeeks.org/data-structures/"),
             ("Scikit-Learn", "https://scikit-learn.org/stable/")
         ],
         "Advanced": [
             ("Deep Learning", "https://www.deeplearning.ai/"),
-            ("System Design Basics", "https://github.com/donnemartin/system-design-primer"),
+            ("System Design", "https://github.com/donnemartin/system-design-primer"),
             ("MLOps", "https://mlops.community/")
         ]
     }
 
-    return roadmap
-
-# -------------------------------
+# -----------------------------
 # Streamlit UI
-# -------------------------------
+# -----------------------------
 st.title("🚀 CareerSense AI")
 
 student_skills = st.text_input(
@@ -67,18 +63,18 @@ if st.button("Find Career Recommendations"):
             ascending=False
         ).head(3)
 
-     for index, row in results.iterrows():
+        for index, row in results.iterrows():
 
-    st.subheader(row['job_title'])
-    st.write("💰 Salary:", row['salary_usd'])
+            st.subheader(row['job_title'])
+            st.write("💰 Salary:", row['salary_usd'])
 
-    roadmap = generate_structured_roadmap(row['job_title'])
+            roadmap = generate_structured_roadmap()
 
-    for phase, resources in roadmap.items():
+            for phase, resources in roadmap.items():
 
-        with st.expander(f"{phase} Phase"):
+                with st.expander(f"{phase} Phase"):
 
-            for title, link in resources:
-                st.markdown(f"- [{title}]({link})")
+                    for title, link in resources:
+                        st.markdown(f"- [{title}]({link})")
 
-    st.divider()
+            st.divider()

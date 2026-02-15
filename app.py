@@ -18,25 +18,29 @@ skill_matrix = vectorizer.fit_transform(df['required_skills'])
 # -------------------------------
 # Roadmap Generator (Simple Version)
 # -------------------------------
-def generate_roadmap(career, skills):
-    return f"""
-### 📍 Roadmap for {career}
+st.expander()
 
-🟢 **Beginner Phase**
-- Learn fundamentals
-- Study: {skills}
-- Complete online courses
+def generate_structured_roadmap(career):
 
-🟡 **Intermediate Phase**
-- Build real-world projects
-- Contribute to GitHub
-- Apply for internships
+    roadmap = {
+        "Beginner": [
+            ("Python Basics", "https://www.w3schools.com/python/"),
+            ("Intro to Machine Learning", "https://www.coursera.org/learn/machine-learning"),
+            ("Git & GitHub", "https://www.freecodecamp.org/news/git-and-github-for-beginners/")
+        ],
+        "Intermediate": [
+            ("Build ML Projects", "https://www.kaggle.com/learn"),
+            ("Data Structures", "https://www.geeksforgeeks.org/data-structures/"),
+            ("Scikit-Learn", "https://scikit-learn.org/stable/")
+        ],
+        "Advanced": [
+            ("Deep Learning", "https://www.deeplearning.ai/"),
+            ("System Design Basics", "https://github.com/donnemartin/system-design-primer"),
+            ("MLOps", "https://mlops.community/")
+        ]
+    }
 
-🔵 **Advanced Phase**
-- Specialize in advanced tools
-- Prepare for technical interviews
-- Target high-paying companies
-"""
+    return roadmap
 
 # -------------------------------
 # Streamlit UI
@@ -63,14 +67,18 @@ if st.button("Find Career Recommendations"):
             ascending=False
         ).head(3)
 
-        for index, row in results.iterrows():
-            st.subheader(row['job_title'])
-            st.write("💰 Salary:", row['salary_usd'])
+     for index, row in results.iterrows():
 
-            roadmap = generate_roadmap(
-                row['job_title'],
-                row['required_skills']
-            )
+    st.subheader(row['job_title'])
+    st.write("💰 Salary:", row['salary_usd'])
 
-            st.markdown(roadmap)
-            st.divider()
+    roadmap = generate_structured_roadmap(row['job_title'])
+
+    for phase, resources in roadmap.items():
+
+        with st.expander(f"{phase} Phase"):
+
+            for title, link in resources:
+                st.markdown(f"- [{title}]({link})")
+
+    st.divider()
